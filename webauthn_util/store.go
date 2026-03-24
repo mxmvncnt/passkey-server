@@ -1,0 +1,11 @@
+package webauthn_util
+
+import "github.com/go-webauthn/webauthn/webauthn"
+
+type SessionEntry struct {
+	User    User
+	Session webauthn.SessionData
+}
+
+var SessionStore = map[string]*SessionEntry{}
+var NewUserSessionStore = map[string]*SessionEntry{}

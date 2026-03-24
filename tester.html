@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://unpkg.com/@simplewebauthn/browser/dist/bundle/index.umd.min.js"></script>
+</head>
+<body>
+<input id="email" placeholder="email" /><br/>
+<button onclick="reg()">Register</button>
+
+<script>
+    const { startRegistration } = SimpleWebAuthnBrowser;
+    const BASE = 'http://localhost:8080';
+
+    async function reg() {
+        const email = document.getElementById('email').value;
+        const headers = { 'Content-Type': 'application/json' };
+
+        const opts = await fetch(`${BASE}/passkey/register/begin`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+        }).then(r => r.json());
+        console.log('begin', opts);
+
+        const cred = await startRegistration(opts);
+        console.log('credential', cred);
+
+        const finishUrl = new URL(`${BASE}/passkey/register/finish`);
+        finishUrl.searchParams.append('user_id', opts.user.id);
+
+        const result = await fetch(finishUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(cred)
+        }).then(r => r.json());
+        console.log('finish', result);
+    }
+</script>
+</body>
+</html>
