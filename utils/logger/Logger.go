@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"passkey-server/config"
@@ -17,8 +18,8 @@ var gray = "\033[37m"
 var white = "\033[97m"
 
 var (
-	stdoutLog = log.New(os.Stdout, "", log.LstdFlags)
-	stderrLog = log.New(os.Stderr, "", log.LstdFlags)
+	stdoutLog = log.New(os.Stdout, "", log.Lshortfile|log.LstdFlags|log.Lmicroseconds)
+	stderrLog = log.New(os.Stderr, "", log.Lshortfile|log.LstdFlags|log.Lmicroseconds)
 )
 
 func color(color string, message string) string {
@@ -27,60 +28,61 @@ func color(color string, message string) string {
 
 func Debug(message string) {
 	if config.LogLevel <= config.LogLevelDebug {
-		Debugf(message)
+		stdoutLog.Output(1, "["+color(green, "DEBUG")+"]"+message)
+
 	}
 }
 
 func Debugf(message string, args ...any) {
 	if config.LogLevel <= config.LogLevelDebug {
-		stdoutLog.Printf("["+green+"DEBUG"+reset+"] "+message, args...)
+		stdoutLog.Output(2, fmt.Sprintf("["+color(green, "DEBUG")+"] "+message, args...))
 	}
 }
 
 func Info(message string) {
 	if config.LogLevel <= config.LogLevelInfo {
-		Infof(message)
+		stdoutLog.Output(1, "["+color(cyan, "INFO")+" ] "+message)
 	}
 }
 
 func Infof(message string, args ...any) {
 	if config.LogLevel <= config.LogLevelInfo {
-		stdoutLog.Printf("["+cyan+"INFO"+reset+" ] "+message, args...)
+		stdoutLog.Output(2, fmt.Sprintf("["+color(cyan, "INFO")+" ] "+message, args...))
 	}
 }
 
 func Warn(message string) {
 	if config.LogLevel <= config.LogLevelWarn {
-		Warnf(message)
+		stdoutLog.Output(1, "["+color(yellow, "WARN")+" ] "+message)
 	}
 }
 
 func Warnf(message string, args ...any) {
 	if config.LogLevel <= config.LogLevelWarn {
-		stdoutLog.Printf("["+yellow+"WARN"+reset+" ] "+message, args...)
+		stdoutLog.Output(2, fmt.Sprintf("["+color(yellow, "WARN")+" ] "+message, args...))
 	}
 }
 
 func Error(message string) {
 	if config.LogLevel <= config.LogLevelError {
-		Errorf(message)
+		stderrLog.Output(1, "["+color(red, "ERROR")+"] "+message)
 	}
 }
 
 func Errorf(message string, args ...any) {
 	if config.LogLevel <= config.LogLevelError {
-		stderrLog.Printf("["+red+"ERROR"+reset+"] "+message, args...)
+		stderrLog.Output(2, fmt.Sprintf("["+color(red, "ERROR")+"] "+message, args...))
 	}
 }
 
 func Fatal(message string) {
 	if config.LogLevel <= config.LogLevelError {
-		Fatalf(message)
+		stderrLog.Output(1, "["+color(red, "FATAL")+"] "+message)
 	}
 }
 
 func Fatalf(message string, args ...any) {
 	if config.LogLevel <= config.LogLevelError {
-		stderrLog.Fatalf("["+red+"FATAL"+reset+"] "+message, args...)
+		stderrLog.Output(2, fmt.Sprintf("["+color(red, "FATAL")+"] "+message, args...))
 	}
 }
