@@ -19,26 +19,17 @@ func (handler *RoutesHandler) BeginLogin(w http.ResponseWriter, r *http.Request)
 	sessionID := uuid.New().String()
 	webauthn_util.LoginSessionStore[sessionID] = session
 
-	//response := map[string]interface{}{
-	//	"options":    options,
-	//	"session_id": sessionID,
-	//}
+	response := map[string]interface{}{
+		"options":    options,
+		"session_id": sessionID,
+	}
 
-	utils.SendJsonResponse(w, http.StatusOK, options)
+	utils.SendJsonResponse(w, http.StatusOK, response)
 	return nil
 }
 
 func (handler *RoutesHandler) FinishLogin(w http.ResponseWriter, r *http.Request) error {
 	sessionID := r.FormValue("session_id")
-
-	session := webauthn_util.LoginSessionStore[sessionID]
-	if session == nil {
-		return apierror.NewApiError(
-			http.StatusNotFound,
-			"no_passkey_session_found",
-			"Please try re-starting the passkey login process",
-			"There was no passkey login session found for this ID")
-	}
 
 	userHandler := func(rawID, userHandle []byte) (webauthn.User, error) {
 		uid, err := uuid.FromBytes(userHandle)
@@ -71,6 +62,15 @@ func (handler *RoutesHandler) FinishLogin(w http.ResponseWriter, r *http.Request
 		}, nil
 	}
 
+	session := webauthn_util.LoginSessionStore[sessionID]
+	if session == nil {
+		return apierror.NewApiError(
+			http.StatusNotFound,
+			"no_passkey_session_found",
+			"Please try re-starting the passkey login process",
+			"There was no passkey login session found for this ID")
+	}
+
 	webauthnUser, credential, err := handler.wa.FinishPasskeyLogin(userHandler, *session, r)
 	if err != nil {
 		return err
@@ -85,9 +85,11 @@ func (handler *RoutesHandler) FinishLogin(w http.ResponseWriter, r *http.Request
 		return err
 	}
 
-	//user, err:= handler.db.GetUserFromID(r.Context(), webauthnUser.WebAuthnName())
+	parsedUuid, _ := uuid.FromBytes(webauthnUser.WebAuthnID())
+
+	user, err := handler.db.GetUserFromID(r.Context(), parsedUuid)
 
 	delete(webauthn_util.LoginSessionStore, sessionID)
-	utils.SendJsonResponse(w, http.StatusOK, webauthnUser.WebAuthnName())
+	utils.SendJsonResponse(w, http.StatusOK, user)
 	return nil
 }
