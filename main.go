@@ -17,6 +17,8 @@ import (
 func main() {
 	router := http.NewServeMux()
 
+	logger.Infof("Loaded config `%s`", config.ConfigName)
+
 	dbPool, dbErr := pgxpool.New(context.Background(), config.DatabaseURL)
 	if dbErr != nil {
 		logger.Fatalf("Failed to initialize database: %v", dbErr)
