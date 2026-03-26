@@ -82,13 +82,18 @@ func (handler *RoutesHandler) FinishRegistrationForNewUser(w http.ResponseWriter
 	}
 
 	err = handler.db.CreateCredential(r.Context(), database.CreateCredentialParams{
-		ID:              credential.ID,
-		UserID:          data.User.ID,
-		PublicKey:       credential.PublicKey,
-		AttestationType: credential.AttestationType,
-		Aaguid:          credential.Authenticator.AAGUID,
-		SignCount:       int64(credential.Authenticator.SignCount),
-		Transports:      transports,
+		ID:                 credential.ID,
+		UserID:             data.User.ID,
+		PublicKey:          credential.PublicKey,
+		AttestationType:    credential.AttestationType,
+		Aaguid:             credential.Authenticator.AAGUID,
+		SignCount:          int64(credential.Authenticator.SignCount),
+		Transports:         transports,
+		UserPresentFlag:    credential.Flags.UserPresent,
+		UserVerifiedFlag:   credential.Flags.UserVerified,
+		BackupEligibleFlag: credential.Flags.BackupEligible,
+		BackupStateFlag:    credential.Flags.BackupState,
+		CloneWarning:       credential.Authenticator.CloneWarning,
 	})
 	if err != nil {
 		return err

@@ -1,7 +1,6 @@
 -- name: CreateCredential :exec
-INSERT INTO webauthn_credentials (id, user_id, public_key, attestation_type, aaguid, sign_count, transports)
-VALUES (@id::bytea, @user_id::uuid, @public_key::bytea, @attestation_type::text, @aaguid::bytea, @sign_count::bigint, @transports::text[]);
-
+INSERT INTO webauthn_credentials (id, user_id, public_key, attestation_type, aaguid, sign_count, transports, user_present_flag, user_verified_flag, backup_eligible_flag, backup_state_flag, clone_warning)
+VALUES (@id::bytea, @user_id::uuid, @public_key::bytea, @attestation_type::text, @aaguid::bytea, @sign_count::bigint, @transports::text[], @user_present_flag::boolean, @user_verified_flag::boolean, @backup_eligible_flag::boolean, @backup_state_flag::boolean, @clone_warning::boolean);
 -- name: ListCredentialsByUser :many
 SELECT *
 FROM webauthn_credentials

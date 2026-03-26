@@ -12,18 +12,23 @@ import (
 )
 
 const createCredential = `-- name: CreateCredential :exec
-INSERT INTO webauthn_credentials (id, user_id, public_key, attestation_type, aaguid, sign_count, transports)
-VALUES ($1::bytea, $2::uuid, $3::bytea, $4::text, $5::bytea, $6::bigint, $7::text[])
+INSERT INTO webauthn_credentials (id, user_id, public_key, attestation_type, aaguid, sign_count, transports, user_present_flag, user_verified_flag, backup_eligible_flag, backup_state_flag, clone_warning)
+VALUES ($1::bytea, $2::uuid, $3::bytea, $4::text, $5::bytea, $6::bigint, $7::text[], $8::boolean, $9::boolean, $10::boolean, $11::boolean, $12::boolean)
 `
 
 type CreateCredentialParams struct {
-	ID              []byte
-	UserID          uuid.UUID
-	PublicKey       []byte
-	AttestationType string
-	Aaguid          []byte
-	SignCount       int64
-	Transports      []string
+	ID                 []byte
+	UserID             uuid.UUID
+	PublicKey          []byte
+	AttestationType    string
+	Aaguid             []byte
+	SignCount          int64
+	Transports         []string
+	UserPresentFlag    bool
+	UserVerifiedFlag   bool
+	BackupEligibleFlag bool
+	BackupStateFlag    bool
+	CloneWarning       bool
 }
 
 func (q *Queries) CreateCredential(ctx context.Context, arg CreateCredentialParams) error {
@@ -35,6 +40,11 @@ func (q *Queries) CreateCredential(ctx context.Context, arg CreateCredentialPara
 		arg.Aaguid,
 		arg.SignCount,
 		arg.Transports,
+		arg.UserPresentFlag,
+		arg.UserVerifiedFlag,
+		arg.BackupEligibleFlag,
+		arg.BackupStateFlag,
+		arg.CloneWarning,
 	)
 	return err
 }
@@ -76,7 +86,7 @@ func (q *Queries) IsEmailExists(ctx context.Context, email string) (bool, error)
 }
 
 const listCredentialsByUser = `-- name: ListCredentialsByUser :many
-SELECT id, user_id, public_key, attestation_type, aaguid, sign_count, transports
+SELECT id, user_id, public_key, attestation_type, aaguid, sign_count, transports, user_present_flag, user_verified_flag, backup_eligible_flag, backup_state_flag, clone_warning, created_at, last_used_at
 FROM webauthn_credentials
 WHERE user_id = $1::uuid
 `
@@ -98,6 +108,13 @@ func (q *Queries) ListCredentialsByUser(ctx context.Context, userID uuid.UUID) (
 			&i.Aaguid,
 			&i.SignCount,
 			&i.Transports,
+			&i.UserPresentFlag,
+			&i.UserVerifiedFlag,
+			&i.BackupEligibleFlag,
+			&i.BackupStateFlag,
+			&i.CloneWarning,
+			&i.CreatedAt,
+			&i.LastUsedAt,
 		); err != nil {
 			return nil, err
 		}

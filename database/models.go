@@ -5,6 +5,8 @@
 package database
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
 )
@@ -15,11 +17,18 @@ type User struct {
 }
 
 type WebauthnCredential struct {
-	ID              []byte
-	UserID          uuid.UUID
-	PublicKey       []byte
-	AttestationType pgtype.Text
-	Aaguid          []byte
-	SignCount       pgtype.Int8
-	Transports      []string
+	ID                 []byte
+	UserID             uuid.UUID
+	PublicKey          []byte
+	AttestationType    pgtype.Text
+	Aaguid             []byte
+	SignCount          int64
+	Transports         []string
+	UserPresentFlag    bool
+	UserVerifiedFlag   bool
+	BackupEligibleFlag bool
+	BackupStateFlag    bool
+	CloneWarning       bool
+	CreatedAt          time.Time
+	LastUsedAt         pgtype.Timestamptz
 }

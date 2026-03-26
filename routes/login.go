@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"github.com/go-webauthn/webauthn/protocol"
 	"github.com/go-webauthn/webauthn/webauthn"
 	"github.com/google/uuid"
 	"net/http"
@@ -44,12 +45,25 @@ func (handler *RoutesHandler) FinishLogin(w http.ResponseWriter, r *http.Request
 
 		credentials := make([]webauthn.Credential, len(dbCredentials))
 		for i, c := range dbCredentials {
+			transports := make([]protocol.AuthenticatorTransport, len(c.Transports))
+			for j, t := range c.Transports {
+				transports[j] = protocol.AuthenticatorTransport(t)
+			}
+
 			credentials[i] = webauthn.Credential{
 				ID:        c.ID,
 				PublicKey: c.PublicKey,
+				Transport: transports,
+				Flags: webauthn.CredentialFlags{
+					UserPresent:    c.UserPresentFlag,
+					UserVerified:   c.UserVerifiedFlag,
+					BackupEligible: c.BackupEligibleFlag,
+					BackupState:    c.BackupStateFlag,
+				},
 				Authenticator: webauthn.Authenticator{
-					AAGUID:    c.Aaguid,
-					SignCount: uint32(c.SignCount.Int64),
+					AAGUID:       c.Aaguid,
+					SignCount:    uint32(c.SignCount),
+					CloneWarning: c.CloneWarning,
 				},
 			}
 		}
@@ -76,7 +90,6 @@ func (handler *RoutesHandler) FinishLogin(w http.ResponseWriter, r *http.Request
 		return err
 	}
 
-	// Update sign count dans la DB
 	err = handler.db.UpdateSignCountForCredential(r.Context(), database.UpdateSignCountForCredentialParams{
 		ID:        credential.ID,
 		SignCount: int64(credential.Authenticator.SignCount),
