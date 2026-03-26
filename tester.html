@@ -5,35 +5,63 @@
 </head>
 <body>
 <input id="email" placeholder="email" /><br/>
-<button onclick="reg()">Register</button>
+<button onclick="register()">Register</button>
+<br><br>
+<button onclick="login()">Login</button>
 
 <script>
-    const { startRegistration } = SimpleWebAuthnBrowser;
+    const { startRegistration, startAuthentication } = SimpleWebAuthnBrowser;
     const BASE = 'http://localhost:8080';
+    const HEADERS = { 'Content-Type': 'application/json' }
 
-    async function reg() {
+    async function register() {
         const email = document.getElementById('email').value;
-        const headers = { 'Content-Type': 'application/json' };
 
         const opts = await fetch(`${BASE}/passkey/register/begin`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: HEADERS,
             body: JSON.stringify({ email })
         }).then(r => r.json());
-        console.log('begin', opts);
+        console.log('register begin', opts);
 
         const cred = await startRegistration(opts);
-        console.log('credential', cred);
+        console.log('register credential', cred);
 
         const finishUrl = new URL(`${BASE}/passkey/register/finish`);
         finishUrl.searchParams.append('user_id', opts.user.id);
 
         const result = await fetch(finishUrl, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: HEADERS,
             body: JSON.stringify(cred)
         }).then(r => r.json());
-        console.log('finish', result);
+        console.log('register finish', result);
+    }
+
+    async function login() {
+        const optionsJSON = await fetch(`${BASE}/passkey/login/begin`, {
+            method: 'POST',
+            headers: HEADERS
+        }).then(r => r.json());
+        console.log('login begin', optionsJSON);
+
+        let cred;
+        try {
+            cred = await startAuthentication(optionsJSON.publicKey);
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+        console.log('login credential', cred);
+
+        const result = await fetch(`${BASE}/passkey/login/finish`, {
+            method: 'POST',
+            headers: HEADERS,
+            body: JSON.stringify(cred)
+        }).then(r => r.json());
+
+        console.log('login finish', result);
+        alert(`Connecté: ${result.email}`);
     }
 </script>
 </body>

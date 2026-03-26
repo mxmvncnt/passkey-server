@@ -12,3 +12,11 @@ SELECT EXISTS(SELECT 1 FROM users WHERE email = @email::text);
 
 -- name: CreateUser :exec
 INSERT INTO users (id, email) VALUES (@id::uuid, @email::text);
+
+-- name: UpdateSignCountForCredential :exec
+UPDATE webauthn_credentials
+SET sign_count = @sign_count::bigint
+WHERE id = @id::bytea;
+
+-- name: GetUserFromID :one
+SELECT * FROM users WHERE id = @id::uuid;

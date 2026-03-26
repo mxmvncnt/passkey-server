@@ -44,6 +44,9 @@ func main() {
 	router.HandleFunc("POST /passkey/register/begin", middleware.Combined(routesHandler.BeginRegistrationForNewUser))
 	router.HandleFunc("POST /passkey/register/finish", middleware.Combined(routesHandler.FinishRegistrationForNewUser))
 
+	router.HandleFunc("POST /passkey/login/begin", middleware.Combined(routesHandler.BeginLogin))
+	router.HandleFunc("POST /passkey/login/finish", middleware.Combined(routesHandler.FinishLogin))
+
 	logger.Info("Server started on http://" + config.ServerHostname + ":" + config.ServerPort)
 	handler := cors.AllowAll().Handler(router)
 	http.ListenAndServe(config.ServerHostname+":"+config.ServerPort, handler)

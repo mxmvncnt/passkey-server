@@ -9,3 +9,4 @@ type SessionEntry struct {
 
 var SessionStore = map[string]*SessionEntry{}
 var NewUserSessionStore = map[string]*SessionEntry{}
+var LoginSessionStore = map[string]*webauthn.SessionData{}

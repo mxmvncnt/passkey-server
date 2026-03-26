@@ -53,6 +53,17 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
 	return err
 }
 
+const getUserFromID = `-- name: GetUserFromID :one
+SELECT id, email FROM users WHERE id = $1::uuid
+`
+
+func (q *Queries) GetUserFromID(ctx context.Context, id uuid.UUID) (User, error) {
+	row := q.db.QueryRow(ctx, getUserFromID, id)
+	var i User
+	err := row.Scan(&i.ID, &i.Email)
+	return i, err
+}
+
 const isEmailExists = `-- name: IsEmailExists :one
 SELECT EXISTS(SELECT 1 FROM users WHERE email = $1::text)
 `
@@ -96,4 +107,20 @@ func (q *Queries) ListCredentialsByUser(ctx context.Context, userID uuid.UUID) (
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateSignCountForCredential = `-- name: UpdateSignCountForCredential :exec
+UPDATE webauthn_credentials
+SET sign_count = $1::bigint
+WHERE id = $2::bytea
+`
+
+type UpdateSignCountForCredentialParams struct {
+	SignCount int64
+	ID        []byte
+}
+
+func (q *Queries) UpdateSignCountForCredential(ctx context.Context, arg UpdateSignCountForCredentialParams) error {
+	_, err := q.db.Exec(ctx, updateSignCountForCredential, arg.SignCount, arg.ID)
+	return err
 }
