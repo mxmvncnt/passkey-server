@@ -1,14 +1,16 @@
 package routes
 
 import (
-	"github.com/go-webauthn/webauthn/protocol"
-	"github.com/go-webauthn/webauthn/webauthn"
-	"github.com/google/uuid"
+	"errors"
 	"net/http"
 	"passkey-server/database"
 	"passkey-server/utils"
 	"passkey-server/utils/apierror"
 	"passkey-server/webauthn_util"
+
+	"github.com/go-webauthn/webauthn/protocol"
+	"github.com/go-webauthn/webauthn/webauthn"
+	"github.com/google/uuid"
 )
 
 func (handler *RoutesHandler) BeginLogin(w http.ResponseWriter, r *http.Request) error {
@@ -87,6 +89,16 @@ func (handler *RoutesHandler) FinishLogin(w http.ResponseWriter, r *http.Request
 
 	webauthnUser, credential, err := handler.wa.FinishPasskeyLogin(userHandler, *session, r)
 	if err != nil {
+		if protocolErr, ok := errors.AsType[*protocol.Error](err); ok {
+			switch protocolErr.Error() {
+			case "Unable to find the credential for the returned credential ID":
+				return apierror.NewApiError(
+					http.StatusForbidden,
+					"no_credential_found",
+					"The credential could not be found or was null",
+					protocolErr.Error())
+			}
+		}
 		return err
 	}
 
