@@ -2,13 +2,14 @@ package main
 
 import (
 	"context"
-	"github.com/go-webauthn/webauthn/webauthn"
 	"net/http"
 	"passkey-server/config"
 	"passkey-server/database"
 	"passkey-server/middleware"
 	"passkey-server/routes"
 	"passkey-server/utils/logger"
+
+	"github.com/go-webauthn/webauthn/webauthn"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rs/cors"
@@ -51,5 +52,9 @@ func main() {
 
 	logger.Info("Server started on http://" + config.ServerHostname + ":" + config.ServerPort)
 	handler := cors.AllowAll().Handler(router)
-	http.ListenAndServe(config.ServerHostname+":"+config.ServerPort, handler)
+	err = http.ListenAndServe(config.ServerHostname+":"+config.ServerPort, handler)
+	if err != nil {
+		logger.Fatalf("Failed to start server: %v", err)
+		return
+	}
 }
