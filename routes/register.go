@@ -2,13 +2,16 @@ package routes
 
 import (
 	"encoding/json"
-	"github.com/google/uuid"
 	"net/http"
 	"passkey-server/database"
 	"passkey-server/utils"
 	"passkey-server/utils/apierror"
 	"passkey-server/utils/logger"
 	webauthn_util "passkey-server/webauthn_util"
+
+	"github.com/go-webauthn/webauthn/protocol"
+	"github.com/go-webauthn/webauthn/webauthn"
+	"github.com/google/uuid"
 )
 
 func (handler *RoutesHandler) BeginRegistrationForNewUser(w http.ResponseWriter, r *http.Request) error {
@@ -39,7 +42,18 @@ func (handler *RoutesHandler) BeginRegistrationForNewUser(w http.ResponseWriter,
 		DisplayName: requestBody.Email,
 	}
 
-	options, session, err := handler.wa.BeginRegistration(user)
+	opts := []webauthn.RegistrationOption{
+		webauthn.WithResidentKeyRequirement(protocol.ResidentKeyRequirementRequired),
+		webauthn.WithExclusions(webauthn.Credentials(user.WebAuthnCredentials()).CredentialDescriptors()),
+		webauthn.WithExtensions(map[string]any{"credProps": true}),
+		webauthn.WithAuthenticatorSelection(protocol.AuthenticatorSelection{
+			AuthenticatorAttachment: protocol.Platform,
+			ResidentKey:             protocol.ResidentKeyRequirementRequired,
+			UserVerification:        protocol.VerificationRequired,
+		}),
+	}
+
+	options, session, err := handler.wa.BeginMediatedRegistration(user, protocol.MediationConditional, opts...)
 	if err != nil {
 		return err
 	}
