@@ -14,7 +14,7 @@ import (
 )
 
 func (handler *RoutesHandler) BeginLogin(w http.ResponseWriter, r *http.Request) error {
-	options, session, err := handler.wa.BeginDiscoverableLogin()
+	options, session, err := handler.wa.BeginDiscoverableMediatedLogin(protocol.MediationDefault)
 	if err != nil {
 		return err
 	}
