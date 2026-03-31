@@ -5,7 +5,7 @@
     <script src="https://unpkg.com/@simplewebauthn/browser/dist/bundle/index.umd.min.js"></script>
 </head>
 <body>
-<input id="email" placeholder="email" autocomplete="webauthn"/><br/>
+<input id="email" placeholder="email" /><br/>
 <button onclick="register()">Register</button>
 <br><br>
 <button onclick="login()">Login</button>
@@ -48,7 +48,7 @@
 
         let cred;
         try {
-            cred = await startAuthentication({optionsJSON: optionsJSON.options.publicKey, useBrowserAutofill: true});
+            cred = await startAuthentication({optionsJSON: optionsJSON.options.publicKey});
         } catch (error) {
             throw error;
         }
