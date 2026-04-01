@@ -17,9 +17,7 @@ CREATE TABLE webauthn_credentials
     user_verified_flag   BOOLEAN     NOT NULL DEFAULT false,
     backup_eligible_flag BOOLEAN     NOT NULL DEFAULT false,
     backup_state_flag    BOOLEAN     NOT NULL DEFAULT false,
-
     clone_warning        BOOLEAN     NOT NULL DEFAULT false,
-
     created_at           TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     last_used_at         TIMESTAMPTZ
 );
