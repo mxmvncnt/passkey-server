@@ -18,12 +18,12 @@ After everything is installed, you can proceed.
     sqlc generate
     ```
 3. Create a config
-    a. Copy [config/example.env](./config/example.env)
-    b. Rename it to something you want (for example, `dev.env`)
-    c. Edit the values to match your preferences. For more details, look at the [config docs](docs/config.md)
+    1. Copy [config/example.env](./config/example.env)
+    2. Rename it to something you want (for example, `dev.env`)
+    3. Edit the values to match your preferences. For more details, look at the [config docs](docs/config.md)
 3. Run the project
     ```
-    go run .
+    (set -a source example.env set +a go run .)
     ```
 
 ## Docs
