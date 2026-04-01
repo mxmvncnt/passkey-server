@@ -29,5 +29,3 @@ to the running program.
 ```
 Make sure to replace `example.env` with your own config.
 
-## Options
-
