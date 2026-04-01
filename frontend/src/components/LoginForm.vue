@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { startAuthentication } from '@simplewebauthn/browser'
 import type { PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/browser'
 import { API_BASE, JSON_HEADERS } from '../config'
+import type { ApiUser } from '../types/user'
 
+const router = useRouter()
 const busy = ref(false)
 const error = ref<string | null>(null)
 
@@ -34,10 +37,10 @@ async function login() {
       method: 'POST',
       headers: JSON_HEADERS,
       body: JSON.stringify(cred),
-    }).then((r) => r.json())) as { Name?: string }
+    }).then((r) => r.json())) as ApiUser
 
     console.log('login finish', result)
-    alert(`Signed in: ${result.Name ?? 'ok'}`)
+    await router.push({ name: 'user', params: { userId: result.ID } })
   } catch (e) {
     error.value = e instanceof Error ? e.message : String(e)
     console.error(e)

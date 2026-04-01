@@ -10,6 +10,10 @@ export default defineConfig({
         target: 'http://localhost:9090',
         changeOrigin: true,
       },
+      '/users': {
+        target: 'http://localhost:9090',
+        changeOrigin: true,
+      },
     },
   },
 })
