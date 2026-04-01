@@ -40,7 +40,7 @@ async function login() {
     }).then((r) => r.json())) as ApiUser
 
     console.log('login finish', result)
-    await router.push({ name: 'user', params: { userId: result.ID } })
+    await router.push({ path: `user/${result.ID}` })
   } catch (e) {
     error.value = e instanceof Error ? e.message : String(e)
     console.error(e)
