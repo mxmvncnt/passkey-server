@@ -61,7 +61,22 @@ type CreateUserParams struct {
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
-	_, err := q.db.Exec(ctx, createUser, arg.ID, arg.Email)
+	_, err := q.db.Exec(ctx, createUser, arg.ID, arg.Name)
+	return err
+}
+
+const deleteCredential = `-- name: DeleteCredential :exec
+DELETE FROM webauthn_credentials
+WHERE user_id = $1::uuid AND id = $2::uuid
+`
+
+type DeleteCredentialParams struct {
+	UserID uuid.UUID
+	ID     uuid.UUID
+}
+
+func (q *Queries) DeleteCredential(ctx context.Context, arg DeleteCredentialParams) error {
+	_, err := q.db.Exec(ctx, deleteCredential, arg.UserID, arg.ID)
 	return err
 }
 

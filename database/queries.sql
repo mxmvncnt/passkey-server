@@ -7,6 +7,10 @@ SELECT *
 FROM webauthn_credentials
 WHERE user_id = @user_id::uuid;
 
+-- name: DeleteCredential :exec
+DELETE FROM webauthn_credentials
+WHERE user_id = @user_id::uuid AND id = @id::uuid;
+
 -- name: IsEmailExists :one
 SELECT EXISTS(SELECT 1 FROM users WHERE name = @name::text);
 
