@@ -12,7 +12,7 @@ CREATE TABLE webauthn_credentials
     nickname             TEXT,
     public_key           BYTEA       NOT NULL,
     attestation_type     TEXT,
-    aaguid               BYTEA,
+    aaguid               UUID,
     sign_count           BIGINT      NOT NULL DEFAULT 0,
     transports           TEXT[],
     user_present_flag    BOOLEAN     NOT NULL DEFAULT false,

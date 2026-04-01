@@ -83,13 +83,15 @@ func (handler *RoutesHandler) FinishRegistrationForNewUser(w http.ResponseWriter
 		transports[i] = string(c)
 	}
 
+	aaguidAsUuid, err := uuid.FromBytes(credential.Authenticator.AAGUID)
+
 	err = handler.db.CreateCredential(r.Context(), database.CreateCredentialParams{
 		ID:                 credential.ID,
 		UserID:             data.User.ID,
 		Nickname:           "",
 		PublicKey:          credential.PublicKey,
 		AttestationType:    credential.AttestationType,
-		Aaguid:             credential.Authenticator.AAGUID,
+		Aaguid:             aaguidAsUuid,
 		SignCount:          int64(credential.Authenticator.SignCount),
 		Transports:         transports,
 		UserPresentFlag:    credential.Flags.UserPresent,

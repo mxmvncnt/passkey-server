@@ -52,6 +52,11 @@ func (handler *RoutesHandler) FinishLogin(w http.ResponseWriter, r *http.Request
 				transports[j] = protocol.AuthenticatorTransport(t)
 			}
 
+			aaguid, err := c.Aaguid.MarshalBinary()
+			if err != nil {
+				return webauthn_util.User{}, err
+			}
+
 			credentials[i] = webauthn.Credential{
 				ID:        c.ID,
 				PublicKey: c.PublicKey,
@@ -63,7 +68,7 @@ func (handler *RoutesHandler) FinishLogin(w http.ResponseWriter, r *http.Request
 					BackupState:    c.BackupStateFlag,
 				},
 				Authenticator: webauthn.Authenticator{
-					AAGUID:       c.Aaguid,
+					AAGUID:       aaguid,
 					SignCount:    uint32(c.SignCount),
 					CloneWarning: c.CloneWarning,
 				},

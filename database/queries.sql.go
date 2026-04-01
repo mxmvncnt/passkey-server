@@ -13,7 +13,7 @@ import (
 
 const createCredential = `-- name: CreateCredential :exec
 INSERT INTO webauthn_credentials (id, user_id, nickname, public_key, attestation_type, aaguid, sign_count, transports, user_present_flag, user_verified_flag, backup_eligible_flag, backup_state_flag, clone_warning)
-VALUES ($1::bytea, $2::uuid, $3::text, $4::bytea, $5::text, $6::bytea, $7::bigint, $8::text[], $9::boolean, $10::boolean, $11::boolean, $12::boolean, $13::boolean)
+VALUES ($1::bytea, $2::uuid, $3::text, $4::bytea, $5::text, $6::uuid, $7::bigint, $8::text[], $9::boolean, $10::boolean, $11::boolean, $12::boolean, $13::boolean)
 `
 
 type CreateCredentialParams struct {
@@ -22,7 +22,7 @@ type CreateCredentialParams struct {
 	Nickname           string
 	PublicKey          []byte
 	AttestationType    string
-	Aaguid             []byte
+	Aaguid             uuid.UUID
 	SignCount          int64
 	Transports         []string
 	UserPresentFlag    bool

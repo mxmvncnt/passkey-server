@@ -23,7 +23,7 @@ type WebauthnCredential struct {
 	Nickname           pgtype.Text
 	PublicKey          []byte
 	AttestationType    pgtype.Text
-	Aaguid             []byte
+	Aaguid             uuid.UUID
 	SignCount          int64
 	Transports         []string
 	UserPresentFlag    bool
