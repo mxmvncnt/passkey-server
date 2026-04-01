@@ -9,6 +9,7 @@
         <h3>Nickname: {{credential.Nickname}}</h3>
         <p>Created at: {{credential.CreatedAt}}</p>
         <p>Last used at: {{credential.LastUsedAt}}</p>
+        <p>Authenticator: {{getAuthenticatorName(credential.Aaguid)}}</p>
       </li>
     </ul>
   </main>
@@ -18,6 +19,7 @@
 import {onMounted, ref} from "vue";
 import {API_BASE, JSON_HEADERS} from "../config.ts";
 import {useRoute} from "vue-router";
+import {aaguids} from "../aaguids.ts";
 
 export interface ApiUser {
   ID: string
@@ -46,6 +48,10 @@ export interface Credential {
 const route = useRoute();
 const user = ref<ApiUser>();
 const credentials = ref<Credential[]>([]);
+
+function getAuthenticatorName(aaguid: string): string {
+  return aaguids[aaguid];
+}
 
 onMounted(async () => {
   const userId = route.params.userId;

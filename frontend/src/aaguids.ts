@@ -7,7 +7,7 @@
  * "community-driven" https://github.com/passkeydeveloper/passkey-authenticator-aaguids
  * combined together.
  */
-export const authenticatorMetadata :Record<string, string> = {
+export const aaguids :Record<string, string> = {
     "00000000-0000-0000-0000-000000000000": "Unknown authenticator",
     "0076631b-d4a0-427f-5773-0ec71c9e0279": "HYPR FIDO2 Authenticator",
     "01020304-0506-0708-0102-030405060708": "Chromium Virtual Authenticator (browser dev tools)",
