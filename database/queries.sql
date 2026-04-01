@@ -15,7 +15,7 @@ INSERT INTO users (id, email) VALUES (@id::uuid, @email::text);
 
 -- name: UpdateSignCountForCredential :exec
 UPDATE webauthn_credentials
-SET sign_count = @sign_count::bigint
+SET sign_count = @sign_count::bigint, last_used_at = NOW()
 WHERE id = @id::bytea;
 
 -- name: GetUserFromID :one

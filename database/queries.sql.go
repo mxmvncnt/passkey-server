@@ -129,7 +129,7 @@ func (q *Queries) ListCredentialsByUser(ctx context.Context, userID uuid.UUID) (
 
 const updateSignCountForCredential = `-- name: UpdateSignCountForCredential :exec
 UPDATE webauthn_credentials
-SET sign_count = $1::bigint
+SET sign_count = $1::bigint, last_used_at = NOW()
 WHERE id = $2::bytea
 `
 
