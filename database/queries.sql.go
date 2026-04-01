@@ -85,14 +85,14 @@ func (q *Queries) IsEmailExists(ctx context.Context, name string) (bool, error) 
 	return exists, err
 }
 
-const listCredentialsByUser = `-- name: ListCredentialsByUser :many
+const listCredentialsForUser = `-- name: ListCredentialsForUser :many
 SELECT id, user_id, nickname, public_key, attestation_type, aaguid, sign_count, transports, user_present_flag, user_verified_flag, backup_eligible_flag, backup_state_flag, clone_warning, created_at, last_used_at
 FROM webauthn_credentials
 WHERE user_id = $1::uuid
 `
 
-func (q *Queries) ListCredentialsByUser(ctx context.Context, userID uuid.UUID) ([]WebauthnCredential, error) {
-	rows, err := q.db.Query(ctx, listCredentialsByUser, userID)
+func (q *Queries) ListCredentialsForUser(ctx context.Context, userID uuid.UUID) ([]WebauthnCredential, error) {
+	rows, err := q.db.Query(ctx, listCredentialsForUser, userID)
 	if err != nil {
 		return nil, err
 	}

@@ -40,7 +40,7 @@ func (handler *RoutesHandler) FinishLogin(w http.ResponseWriter, r *http.Request
 			return webauthn_util.User{}, err
 		}
 
-		dbCredentials, err := handler.db.ListCredentialsByUser(r.Context(), uid)
+		dbCredentials, err := handler.db.ListCredentialsForUser(r.Context(), uid)
 		if err != nil {
 			return webauthn_util.User{}, err
 		}

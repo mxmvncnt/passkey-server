@@ -2,7 +2,7 @@
 INSERT INTO webauthn_credentials (id, user_id, nickname, public_key, attestation_type, aaguid, sign_count, transports, user_present_flag, user_verified_flag, backup_eligible_flag, backup_state_flag, clone_warning)
 VALUES (@id::bytea, @user_id::uuid, @nickname::text, @public_key::bytea, @attestation_type::text, @aaguid::bytea, @sign_count::bigint, @transports::text[], @user_present_flag::boolean, @user_verified_flag::boolean, @backup_eligible_flag::boolean, @backup_state_flag::boolean, @clone_warning::boolean);
 
--- name: ListCredentialsByUser :many
+-- name: ListCredentialsForUser :many
 SELECT *
 FROM webauthn_credentials
 WHERE user_id = @user_id::uuid;
