@@ -19,6 +19,7 @@ type User struct {
 type WebauthnCredential struct {
 	ID                 []byte
 	UserID             uuid.UUID
+	Nickname           pgtype.Text
 	PublicKey          []byte
 	AttestationType    pgtype.Text
 	Aaguid             []byte

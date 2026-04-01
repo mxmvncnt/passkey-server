@@ -86,7 +86,7 @@ func (q *Queries) IsEmailExists(ctx context.Context, email string) (bool, error)
 }
 
 const listCredentialsByUser = `-- name: ListCredentialsByUser :many
-SELECT id, user_id, public_key, attestation_type, aaguid, sign_count, transports, user_present_flag, user_verified_flag, backup_eligible_flag, backup_state_flag, clone_warning, created_at, last_used_at
+SELECT id, user_id, nickname, public_key, attestation_type, aaguid, sign_count, transports, user_present_flag, user_verified_flag, backup_eligible_flag, backup_state_flag, clone_warning, created_at, last_used_at
 FROM webauthn_credentials
 WHERE user_id = $1::uuid
 `
@@ -103,6 +103,7 @@ func (q *Queries) ListCredentialsByUser(ctx context.Context, userID uuid.UUID) (
 		if err := rows.Scan(
 			&i.ID,
 			&i.UserID,
+			&i.Nickname,
 			&i.PublicKey,
 			&i.AttestationType,
 			&i.Aaguid,

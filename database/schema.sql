@@ -8,6 +8,7 @@ CREATE TABLE webauthn_credentials
 (
     id                   BYTEA PRIMARY KEY,
     user_id              UUID        NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    nickname             TEXT,
     public_key           BYTEA       NOT NULL,
     attestation_type     TEXT,
     aaguid               BYTEA,
