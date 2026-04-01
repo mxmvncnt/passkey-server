@@ -98,6 +98,7 @@ func (handler *RoutesHandler) FinishRegistrationForNewUser(w http.ResponseWriter
 	err = handler.db.CreateCredential(r.Context(), database.CreateCredentialParams{
 		ID:                 credential.ID,
 		UserID:             data.User.ID,
+		Nickname:           "",
 		PublicKey:          credential.PublicKey,
 		AttestationType:    credential.AttestationType,
 		Aaguid:             credential.Authenticator.AAGUID,
