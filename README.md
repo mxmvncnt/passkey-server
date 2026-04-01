@@ -3,6 +3,10 @@ This project aims to make passkey rollout simpler by providing a plug and play s
 
 This project is made to integrate seamlessly in your existing Postgres database to make it easier to install.
 
+## Warning
+This project is intended to be used as a micro-service, which means it should not be exposeddirectly to the users, at
+least for the time being.
+
 ## Dev Setup
 This project uses [SQLC](https://docs.sqlc.dev/en/stable/overview/install.html) for generating the schema definitions to
  be used in the code.
