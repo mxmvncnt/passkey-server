@@ -23,7 +23,7 @@ After everything is installed, you can proceed.
     3. Edit the values to match your preferences. For more details, look at the [config docs](docs/config.md)
 3. Run the project
     ```
-    (set -a source example.env set +a go run .)
+    (set -a source config/example.env set +a go run .)
     ```
 
 ## Docs
