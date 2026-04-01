@@ -50,12 +50,12 @@ func (q *Queries) CreateCredential(ctx context.Context, arg CreateCredentialPara
 }
 
 const createUser = `-- name: CreateUser :exec
-INSERT INTO users (id, email) VALUES ($1::uuid, $2::text)
+INSERT INTO users (id, name) VALUES ($1::uuid, $2::text)
 `
 
 type CreateUserParams struct {
-	ID    uuid.UUID
-	Email string
+	ID   uuid.UUID
+	Name string
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
@@ -64,22 +64,22 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
 }
 
 const getUserFromID = `-- name: GetUserFromID :one
-SELECT id, email FROM users WHERE id = $1::uuid
+SELECT id, name, display_name FROM users WHERE id = $1::uuid
 `
 
 func (q *Queries) GetUserFromID(ctx context.Context, id uuid.UUID) (User, error) {
 	row := q.db.QueryRow(ctx, getUserFromID, id)
 	var i User
-	err := row.Scan(&i.ID, &i.Email)
+	err := row.Scan(&i.ID, &i.Name, &i.DisplayName)
 	return i, err
 }
 
 const isEmailExists = `-- name: IsEmailExists :one
-SELECT EXISTS(SELECT 1 FROM users WHERE email = $1::text)
+SELECT EXISTS(SELECT 1 FROM users WHERE name = $1::text)
 `
 
-func (q *Queries) IsEmailExists(ctx context.Context, email string) (bool, error) {
-	row := q.db.QueryRow(ctx, isEmailExists, email)
+func (q *Queries) IsEmailExists(ctx context.Context, name string) (bool, error) {
+	row := q.db.QueryRow(ctx, isEmailExists, name)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err

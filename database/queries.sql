@@ -8,10 +8,10 @@ FROM webauthn_credentials
 WHERE user_id = @user_id::uuid;
 
 -- name: IsEmailExists :one
-SELECT EXISTS(SELECT 1 FROM users WHERE email = @email::text);
+SELECT EXISTS(SELECT 1 FROM users WHERE name = @name::text);
 
 -- name: CreateUser :exec
-INSERT INTO users (id, email) VALUES (@id::uuid, @email::text);
+INSERT INTO users (id, name) VALUES (@id::uuid, @name::text);
 
 -- name: UpdateSignCountForCredential :exec
 UPDATE webauthn_credentials

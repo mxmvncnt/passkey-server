@@ -12,8 +12,9 @@ import (
 )
 
 type User struct {
-	ID    uuid.UUID
-	Email string
+	ID          uuid.UUID
+	Name        pgtype.Text
+	DisplayName pgtype.Text
 }
 
 type WebauthnCredential struct {
