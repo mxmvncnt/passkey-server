@@ -4,6 +4,7 @@
       <RouterLink to="/" style="color: inherit">← Home</RouterLink>
     </p>
     <h2>Welcome back, {{ user?.Name }}</h2>
+    <button>Register new passkey</button>
     <ul v-for="credential in credentials">
       <li>
         <h3>Nickname: {{credential.Nickname}}</h3>
@@ -50,7 +51,7 @@ const user = ref<ApiUser>();
 const credentials = ref<Credential[]>([]);
 
 function getAuthenticatorName(aaguid: string): string {
-  return aaguids[aaguid];
+  return aaguids[aaguid] || "Unknown";
 }
 
 onMounted(async () => {
