@@ -51,6 +51,7 @@ func main() {
 	router.HandleFunc("POST /passkey/login/finish", middleware.Combined(routesHandler.FinishLogin))
 
 	router.HandleFunc("GET /credentials/{userID}/list", middleware.Combined(routesHandler.GetCredentialsList))
+	router.HandleFunc("GET /users/{userID}", middleware.Combined(routesHandler.GetUser))
 
 	logger.Info("Server started on http://" + config.ServerHostname + ":" + config.ServerPort)
 	handler := cors.AllowAll().Handler(router)
