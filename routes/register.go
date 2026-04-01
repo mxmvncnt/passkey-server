@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"passkey-server/database"
 	"passkey-server/utils"
-	"passkey-server/utils/apierror"
 	"passkey-server/utils/logger"
 	webauthn_util "passkey-server/webauthn_util"
 
@@ -23,17 +22,6 @@ func (handler *RoutesHandler) BeginRegistrationForNewUser(w http.ResponseWriter,
 	if err := decoder.Decode(&requestBody); err != nil {
 		logger.Errorf("[register.go - BeginRegistrationForNewUser] failed to decode JSON body: %s", err)
 		return err
-	}
-	isEmailExists, err := handler.db.IsEmailExists(r.Context(), requestBody.Email)
-	if err != nil {
-		return err
-	}
-	if isEmailExists == true {
-		return apierror.NewApiError(
-			http.StatusConflict,
-			"account_already_exists",
-			"Could not register your account",
-			"An account is already registered using this email.")
 	}
 
 	user := webauthn_util.User{
@@ -83,8 +71,8 @@ func (handler *RoutesHandler) FinishRegistrationForNewUser(w http.ResponseWriter
 	}
 
 	err = handler.db.CreateUser(r.Context(), database.CreateUserParams{
-		ID:    data.User.ID,
-		Email: data.User.Name,
+		ID:   data.User.ID,
+		Name: data.User.Name,
 	})
 	if err != nil {
 		return err
