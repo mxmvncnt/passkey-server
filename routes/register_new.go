@@ -20,7 +20,7 @@ func (handler *RoutesHandler) BeginRegistrationForNewUser(w http.ResponseWriter,
 
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&requestBody); err != nil {
-		logger.Errorf("[register.go - BeginRegistrationForNewUser] failed to decode JSON body: %s", err)
+		logger.Errorf("[register_new.go - BeginRegistrationForNewUser] failed to decode JSON body: %s", err)
 		return err
 	}
 
