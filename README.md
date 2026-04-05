@@ -7,6 +7,10 @@ This project is made to integrate seamlessly in your existing Postgres database 
 This project is intended to be used as a micro-service, which means it should not be exposeddirectly to the users, at
 least for the time being.
 
+### Woke Software Disclaimer
+This is woke software because I think gay people should exist.
+As such, this is an application to be added on [Lunduke's SoftwarePoliticsTracker](https://github.com/BryanLunduke/SoftwarePoliticsTracker)
+
 ## Dev Setup
 This project uses [SQLC](https://docs.sqlc.dev/en/stable/overview/install.html) for generating the schema definitions to
  be used in the code.
