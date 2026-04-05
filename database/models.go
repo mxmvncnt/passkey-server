@@ -11,6 +11,19 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type Session struct {
+	ID                 uuid.UUID
+	CreatedAt          time.Time
+	LastUsedAt         pgtype.Timestamptz
+	CreatedAtIp        string
+	CreatedAtUserAgent pgtype.Text
+	DeviceNickname     pgtype.Text
+	Token              string
+	UserID             uuid.UUID
+	ExpiresAt          pgtype.Timestamptz
+	IsLong             bool
+}
+
 type User struct {
 	ID          uuid.UUID
 	Name        pgtype.Text

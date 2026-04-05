@@ -7,6 +7,7 @@ package database
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -51,6 +52,44 @@ func (q *Queries) CreateCredential(ctx context.Context, arg CreateCredentialPara
 	return err
 }
 
+const createSession = `-- name: CreateSession :one
+INSERT INTO session (created_at_ip, token, user_id, expires_at, is_long)
+VALUES ($1::text, $2::text, $3::uuid, $4::timestamptz, $5::bool)
+RETURNING id, created_at, last_used_at, created_at_ip, created_at_user_agent, device_nickname, token, user_id, expires_at, is_long
+`
+
+type CreateSessionParams struct {
+	CreatedAtIp string
+	Token       string
+	UserID      uuid.UUID
+	ExpiresAt   time.Time
+	IsLong      bool
+}
+
+func (q *Queries) CreateSession(ctx context.Context, arg CreateSessionParams) (Session, error) {
+	row := q.db.QueryRow(ctx, createSession,
+		arg.CreatedAtIp,
+		arg.Token,
+		arg.UserID,
+		arg.ExpiresAt,
+		arg.IsLong,
+	)
+	var i Session
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.LastUsedAt,
+		&i.CreatedAtIp,
+		&i.CreatedAtUserAgent,
+		&i.DeviceNickname,
+		&i.Token,
+		&i.UserID,
+		&i.ExpiresAt,
+		&i.IsLong,
+	)
+	return i, err
+}
+
 const createUser = `-- name: CreateUser :exec
 INSERT INTO users (id, name) VALUES ($1::uuid, $2::text)
 `
@@ -88,6 +127,39 @@ func (q *Queries) GetUserFromID(ctx context.Context, id uuid.UUID) (User, error)
 	row := q.db.QueryRow(ctx, getUserFromID, id)
 	var i User
 	err := row.Scan(&i.ID, &i.Name, &i.DisplayName)
+	return i, err
+}
+
+const getUserFromToken = `-- name: GetUserFromToken :one
+SELECT session.id, session.created_at, session.last_used_at, session.created_at_ip, session.created_at_user_agent, session.device_nickname, session.token, session.user_id, session.expires_at, session.is_long, users.id, users.name, users.display_name FROM session
+JOIN users ON session.user_id = users.id
+WHERE session.token = $1::text
+LIMIT 1
+`
+
+type GetUserFromTokenRow struct {
+	Session Session
+	User    User
+}
+
+func (q *Queries) GetUserFromToken(ctx context.Context, token string) (GetUserFromTokenRow, error) {
+	row := q.db.QueryRow(ctx, getUserFromToken, token)
+	var i GetUserFromTokenRow
+	err := row.Scan(
+		&i.Session.ID,
+		&i.Session.CreatedAt,
+		&i.Session.LastUsedAt,
+		&i.Session.CreatedAtIp,
+		&i.Session.CreatedAtUserAgent,
+		&i.Session.DeviceNickname,
+		&i.Session.Token,
+		&i.Session.UserID,
+		&i.Session.ExpiresAt,
+		&i.Session.IsLong,
+		&i.User.ID,
+		&i.User.Name,
+		&i.User.DisplayName,
+	)
 	return i, err
 }
 

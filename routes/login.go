@@ -106,6 +106,7 @@ func (handler *RoutesHandler) FinishLogin(w http.ResponseWriter, r *http.Request
 		}
 		return err
 	}
+	delete(webauthn_util.LoginSessionStore, sessionID)
 
 	err = handler.db.UpdateSignCountForCredential(r.Context(), database.UpdateSignCountForCredentialParams{
 		ID:        credential.ID,
@@ -118,8 +119,30 @@ func (handler *RoutesHandler) FinishLogin(w http.ResponseWriter, r *http.Request
 	parsedUuid, _ := uuid.FromBytes(webauthnUser.WebAuthnID())
 
 	user, err := handler.db.GetUserFromID(r.Context(), parsedUuid)
+	if err != nil {
+		return apierror.NewApiError(
+			http.StatusNotFound,
+			"user_not_found",
+			"Could not log you in",
+			"Could not find the user to log into")
+	}
 
-	delete(webauthn_util.LoginSessionStore, sessionID)
-	utils.SendJsonResponse(w, http.StatusOK, user)
+	userSession, err := utils.CreateSession(handler.db, user.ID, false)
+	if err != nil {
+		return err
+	}
+
+	response := map[string]any{
+		"Session": map[string]any{
+			"Token":     userSession.Token,
+			"ExpiresAt": userSession.ExpiresAt,
+		},
+		"User": map[string]any{
+			"Name":        user.Name,
+			"DisplayName": user.DisplayName,
+		},
+	}
+
+	utils.SendJsonResponse(w, http.StatusOK, response)
 	return nil
 }

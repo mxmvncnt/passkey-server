@@ -24,3 +24,14 @@ WHERE id = @id::bytea;
 
 -- name: GetUserFromID :one
 SELECT * FROM users WHERE id = @id::uuid;
+
+-- name: CreateSession :one
+INSERT INTO session (created_at_ip, token, user_id, expires_at, is_long)
+VALUES (@created_at_ip::text, @token::text, @user_id::uuid, @expires_at::timestamptz, @is_long::bool)
+RETURNING *;
+
+-- name: GetUserFromToken :one
+SELECT sqlc.embed(session), sqlc.embed(users) FROM session
+JOIN users ON session.user_id = users.id
+WHERE session.token = @token::text
+LIMIT 1;
