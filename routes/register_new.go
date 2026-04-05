@@ -69,7 +69,6 @@ func (handler *RoutesHandler) FinishRegistrationForNewUser(w http.ResponseWriter
 	if err != nil {
 		return err
 	}
-	delete(webauthn_util.NewUserSessionStore, parsedUuid.String())
 
 	err = handler.db.CreateUser(r.Context(), database.CreateUserParams{
 		ID:   data.User.ID,
@@ -105,22 +104,6 @@ func (handler *RoutesHandler) FinishRegistrationForNewUser(w http.ResponseWriter
 		return err
 	}
 
-	userSession, err := utils.CreateSession(handler.db, parsedUuid, false)
-	if err != nil {
-		return err
-	}
-
-	response := map[string]any{
-		"Session": map[string]any{
-			"Token":     userSession.Token,
-			"ExpiresAt": userSession.ExpiresAt,
-		},
-		"User": map[string]any{
-			"Name":        data.User.Name,
-			"DisplayName": data.User.DisplayName,
-		},
-	}
-
-	utils.SendJsonResponse(w, http.StatusOK, response)
+	delete(webauthn_util.NewUserSessionStore, parsedUuid.String())
 	return nil
 }
