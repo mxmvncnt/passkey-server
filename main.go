@@ -47,6 +47,9 @@ func main() {
 	router.HandleFunc("POST /passkey/register/begin", middleware.Combined(routesHandler.BeginRegistrationForNewUser))
 	router.HandleFunc("POST /passkey/register/finish", middleware.Combined(routesHandler.FinishRegistrationForNewUser))
 
+	router.HandleFunc("POST /passkey/add/begin", middleware.Combined(routesHandler.BeginRegistrationForExistingUser))
+	router.HandleFunc("POST /passkey/add/finish", middleware.Combined(routesHandler.FinishRegistrationForExistingUser))
+
 	router.HandleFunc("POST /passkey/login/begin", middleware.Combined(routesHandler.BeginLogin))
 	router.HandleFunc("POST /passkey/login/finish", middleware.Combined(routesHandler.FinishLogin))
 

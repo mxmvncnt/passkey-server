@@ -7,6 +7,6 @@ type SessionEntry struct {
 	Session webauthn.SessionData
 }
 
-var SessionStore = map[string]*SessionEntry{}
+var ExistingUserSessionStore = map[string]*SessionEntry{}
 var NewUserSessionStore = map[string]*SessionEntry{}
 var LoginSessionStore = map[string]*webauthn.SessionData{}

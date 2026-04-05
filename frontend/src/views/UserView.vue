@@ -4,7 +4,7 @@
       <RouterLink to="/" style="color: inherit">← Home</RouterLink>
     </p>
     <h2>Welcome back, {{ user?.Name }}</h2>
-    <button>Register new passkey</button>
+    <button @click="addPasskey">Register new passkey</button>
     <ul v-for="credential in credentials">
       <li>
         <h3>Nickname: {{credential.Nickname}}</h3>
@@ -21,6 +21,7 @@ import {onMounted, ref} from "vue";
 import {API_BASE, JSON_HEADERS} from "../config.ts";
 import {useRoute} from "vue-router";
 import {aaguids} from "../aaguids.ts";
+import {startRegistration} from "@simplewebauthn/browser";
 
 export interface ApiUser {
   ID: string
@@ -49,10 +50,46 @@ export interface Credential {
 const route = useRoute();
 const user = ref<ApiUser>();
 const credentials = ref<Credential[]>([]);
+const busy = ref(false)
+const error = ref<string | null>(null)
 
 function getAuthenticatorName(aaguid: string): string {
   return aaguids[aaguid] || "Unknown";
 }
+
+async function addPasskey() {
+  error.value = null
+  busy.value = true
+  try {
+    const opts = await fetch(`${API_BASE}/passkey/add/begin`, {
+      method: 'POST',
+      headers: JSON_HEADERS,
+      body: JSON.stringify({ user_id: user.value?.ID }),
+    }).then((r) => r.json())
+    console.log('add begin', opts)
+
+    const cred = await startRegistration({ optionsJSON: opts })
+    console.log('add credential', cred)
+
+    const finishUrl = new URL(`${API_BASE}/passkey/add/finish`, window.location.origin)
+    finishUrl.searchParams.append('user_id', opts.user.id)
+
+    const result = await fetch(finishUrl, {
+      method: 'POST',
+      headers: JSON_HEADERS,
+      body: JSON.stringify(cred),
+    })
+    console.log('add finish', result)
+    if (!result.ok) throw new Error(`add finish failed: ${result.status}`)
+    alert('c bon tu px te connecter avec mtn')
+  } catch (e) {
+    error.value = e instanceof Error ? e.message : String(e)
+    console.error(e)
+  } finally {
+    busy.value = false
+  }
+}
+
 
 onMounted(async () => {
   const userId = route.params.userId;
