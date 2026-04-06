@@ -30,7 +30,7 @@ async function login() {
     })
     console.log('login credential', cred)
 
-    const finishUrl = new URL(`${API_BASE}/passkey/login/finish`, window.location.origin)
+    const finishUrl = new URL(`${API_BASE}/passkey/login/finish`)
     finishUrl.searchParams.append('session_id', optionsJSON.session_id)
 
     const result = (await fetch(finishUrl, {
