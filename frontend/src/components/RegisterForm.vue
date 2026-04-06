@@ -33,7 +33,7 @@ async function register() {
     if (!result.ok) throw new Error(`Register finish failed: ${result.status}`)
     alert('c bon tu px te connecter mtn')
   } catch (e) {
-    error.value = e instanceof Error ? e.message : String(e)
+    error.value = e +''
     console.error(e)
   } finally {
     busy.value = false
