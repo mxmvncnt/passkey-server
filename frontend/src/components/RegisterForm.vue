@@ -21,7 +21,7 @@ async function register() {
     const cred = await startRegistration({ optionsJSON: opts })
     console.log('register credential', cred)
 
-    const finishUrl = new URL(`${API_BASE}/passkey/register/finish`, window.location.origin)
+    const finishUrl = new URL(`${API_BASE}/passkey/register/finish`)
     finishUrl.searchParams.append('user_id', opts.user.id)
 
     const result = await fetch(finishUrl, {
@@ -33,7 +33,7 @@ async function register() {
     if (!result.ok) throw new Error(`Register finish failed: ${result.status}`)
     alert('c bon tu px te connecter mtn')
   } catch (e) {
-    error.value = e instanceof Error ? e.message : String(e)
+    error.value = e +''
     console.error(e)
   } finally {
     busy.value = false

@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router'
 import { startAuthentication } from '@simplewebauthn/browser'
 import type { PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/browser'
 import { API_BASE, JSON_HEADERS } from '../config'
-import type { ApiUser } from '../types/user'
+import type { ApiUser } from '../views/UserView.vue'
 
 const router = useRouter()
 const busy = ref(false)
@@ -30,7 +30,7 @@ async function login() {
     })
     console.log('login credential', cred)
 
-    const finishUrl = new URL(`${API_BASE}/passkey/login/finish`, window.location.origin)
+    const finishUrl = new URL(`${API_BASE}/passkey/login/finish`)
     finishUrl.searchParams.append('session_id', optionsJSON.session_id)
 
     const result = (await fetch(finishUrl, {

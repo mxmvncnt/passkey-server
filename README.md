@@ -4,8 +4,8 @@ This project aims to make passkey rollout simpler by providing a plug and play s
 This project is made to integrate seamlessly in your existing Postgres database to make it easier to install.
 
 ## Warning
-This project is intended to be used as a micro-service, which means it should not be exposeddirectly to the users, at
-least for the time being.
+This project is intended to be used by your existing backend service, which means it should NOT be exposed to your users directly. 
+This software has no notion of authorization, so this means that any action simply takes in a UserID and assumes the request was authorized by an earlier step.
 
 ### Woke Software Disclaimer
 This is woke software because I think gay people should exist.

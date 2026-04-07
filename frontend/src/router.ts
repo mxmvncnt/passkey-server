@@ -1,7 +1,6 @@
 import HomeView from "./views/HomeView.vue";
 import UserView from "./views/UserView.vue";
 import {createRouter, createWebHistory} from "vue-router";
-import {BASE_PATH} from "./config.ts";
 
 const routes = [
     { path: '/', component: HomeView },
@@ -9,8 +8,8 @@ const routes = [
 ]
 
 const router = createRouter({
-    history: createWebHistory(BASE_PATH || '/'),
-    routes,
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes,
 })
 
 export default router
