@@ -3,7 +3,6 @@ package routes
 import (
 	"encoding/json"
 	"net/http"
-	"passkey-server/database"
 	"passkey-server/utils"
 
 	"github.com/google/uuid"
@@ -32,22 +31,5 @@ func (handler *RoutesHandler) DeleteCredential(w http.ResponseWriter, r *http.Re
 	if err := decoder.Decode(&requestBody); err != nil {
 		return err
 	}
-
-	parsedUserID, err := uuid.Parse(requestBody.UserID)
-	if err != nil {
-		return err
-	}
-
-	//credentialID := utils.GetByteArrayFromBase64(requestBody.CredentialID)
-	credentialID := []byte(requestBody.CredentialID)
-
-	err = handler.db.DeleteCredential(r.Context(), database.DeleteCredentialParams{
-		UserID: parsedUserID,
-		ID:     credentialID,
-	})
-	if err != nil {
-		return err
-	}
-
 	return nil
 }
