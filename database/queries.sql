@@ -9,7 +9,7 @@ WHERE user_id = @user_id::uuid;
 
 -- name: DeleteCredential :exec
 DELETE FROM webauthn_credentials
-WHERE user_id = @user_id::uuid AND id = @id::uuid;
+WHERE user_id = @user_id::uuid AND id = @id::bytea;
 
 -- name: IsEmailExists :one
 SELECT EXISTS(SELECT 1 FROM users WHERE name = @name::text);

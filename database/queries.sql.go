@@ -67,12 +67,12 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
 
 const deleteCredential = `-- name: DeleteCredential :exec
 DELETE FROM webauthn_credentials
-WHERE user_id = $1::uuid AND id = $2::uuid
+WHERE user_id = $1::uuid AND id = $2::bytea
 `
 
 type DeleteCredentialParams struct {
 	UserID uuid.UUID
-	ID     uuid.UUID
+	ID     []byte
 }
 
 func (q *Queries) DeleteCredential(ctx context.Context, arg DeleteCredentialParams) error {

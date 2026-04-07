@@ -11,6 +11,7 @@
         <p>Created at: {{credential.CreatedAt}}</p>
         <p>Last used at: {{credential.LastUsedAt}}</p>
         <p>Authenticator: {{getAuthenticatorName(credential.Aaguid)}}</p>
+        <button @click="deletePasskey(credential)">Delete</button>
       </li>
     </ul>
   </main>
@@ -90,6 +91,25 @@ async function addPasskey() {
   }
 }
 
+async function deletePasskey(credential: Credential) {
+  error.value = null
+  busy.value = true
+
+  try {
+    await fetch(`${API_BASE}/credentials/delete`, {
+      method: 'DELETE',
+      headers: JSON_HEADERS,
+      body: JSON.stringify({ user_id: user.value?.ID, credential_id: credential.ID }),
+    }).then((r) => r.json())
+
+    alert(`passkey deleted: ${credential.Nickname} (${getAuthenticatorName(credential.Aaguid)})`)
+  } catch (e) {
+    error.value = e instanceof Error ? e.message : String(e)
+    console.error(e)
+  } finally {
+    busy.value = false
+  }
+}
 
 onMounted(async () => {
   const userId = route.params.userId;
