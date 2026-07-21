@@ -117,9 +117,7 @@ func (handler *RoutesHandler) FinishLogin(w http.ResponseWriter, r *http.Request
 
 	parsedUuid, _ := uuid.FromBytes(webauthnUser.WebAuthnID())
 
-	user, err := handler.db.GetUserFromID(r.Context(), parsedUuid)
-
 	delete(webauthn_util.LoginSessionStore, sessionID)
-	utils.SendJsonResponse(w, http.StatusOK, user)
+	utils.SendJsonResponse(w, http.StatusOK, parsedUuid.String())
 	return nil
 }

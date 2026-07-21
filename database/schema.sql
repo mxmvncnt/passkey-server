@@ -1,8 +1,7 @@
 CREATE TABLE users
 (
-    id           UUID PRIMARY KEY,
-    name         TEXT,
-    display_name TEXT
+    id            UUID PRIMARY KEY,
+    webauthn_name TEXT -- unique name used for webauthn reasons
 );
 
 CREATE TABLE webauthn_credentials

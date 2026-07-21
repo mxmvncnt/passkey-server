@@ -2,6 +2,7 @@ package routes
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"passkey-server/database"
 	"passkey-server/utils"
@@ -12,6 +13,7 @@ import (
 	"github.com/go-webauthn/webauthn/protocol"
 	"github.com/go-webauthn/webauthn/webauthn"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgconn"
 )
 
 func (handler *RoutesHandler) BeginRegistrationForNewUser(w http.ResponseWriter, r *http.Request) error {
@@ -25,8 +27,11 @@ func (handler *RoutesHandler) BeginRegistrationForNewUser(w http.ResponseWriter,
 		return err
 	}
 
-	isEmailExists, err := handler.db.IsEmailExists(r.Context(), requestBody.Email)
+	isEmailExists, err := handler.db.IsUserExists(r.Context(), requestBody.Email)
 	if err != nil {
+		if pgErr, ok := errors.AsType[*pgconn.PgError](err); ok {
+			return pgErr
+		}
 		return err
 	}
 
@@ -82,10 +87,7 @@ func (handler *RoutesHandler) FinishRegistrationForNewUser(w http.ResponseWriter
 		return err
 	}
 
-	err = handler.db.CreateUser(r.Context(), database.CreateUserParams{
-		ID:   data.User.ID,
-		Name: data.User.Name,
-	})
+	err = handler.db.CreateUser(r.Context(), data.User.ID)
 	if err != nil {
 		return err
 	}

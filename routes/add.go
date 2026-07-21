@@ -36,8 +36,8 @@ func (handler *RoutesHandler) BeginRegistrationForExistingUser(w http.ResponseWr
 
 	webauthnUser := webauthn_util.User{
 		ID:          user.ID,
-		DisplayName: user.DisplayName.String,
-		Name:        user.Name.String,
+		DisplayName: user.WebauthnName.String,
+		Name:        user.ID.String(),
 		Credentials: nil,
 	}
 

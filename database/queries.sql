@@ -11,11 +11,11 @@ WHERE user_id = @user_id::uuid;
 DELETE FROM webauthn_credentials
 WHERE user_id = @user_id::uuid AND id = @id::uuid;
 
--- name: IsEmailExists :one
-SELECT EXISTS(SELECT 1 FROM users WHERE name = @name::text);
+-- name: IsUserExists :one
+SELECT EXISTS(SELECT 1 FROM users WHERE webauthn_name = @webauthn_name::text);
 
 -- name: CreateUser :exec
-INSERT INTO users (id, name) VALUES (@id::uuid, @name::text);
+INSERT INTO users (id) VALUES (@id::uuid);
 
 -- name: UpdateSignCountForCredential :exec
 UPDATE webauthn_credentials
