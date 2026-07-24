@@ -76,13 +76,18 @@ func (q *Queries) DeleteCredential(ctx context.Context, arg DeleteCredentialPara
 }
 
 const getUserFromID = `-- name: GetUserFromID :one
-SELECT id, webauthn_name FROM users WHERE id = $1::uuid
+SELECT id, project_id, name, display_name FROM users WHERE id = $1::uuid
 `
 
 func (q *Queries) GetUserFromID(ctx context.Context, id uuid.UUID) (User, error) {
 	row := q.db.QueryRow(ctx, getUserFromID, id)
 	var i User
-	err := row.Scan(&i.ID, &i.WebauthnName)
+	err := row.Scan(
+		&i.ID,
+		&i.ProjectID,
+		&i.Name,
+		&i.DisplayName,
+	)
 	return i, err
 }
 

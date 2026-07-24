@@ -11,9 +11,18 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type Project struct {
+	ID        uuid.UUID
+	OwnerID   uuid.UUID
+	Name      string
+	CreatedAt time.Time
+}
+
 type User struct {
-	ID           uuid.UUID
-	WebauthnName pgtype.Text
+	ID          uuid.UUID
+	ProjectID   uuid.UUID
+	Name        pgtype.Text
+	DisplayName pgtype.Text
 }
 
 type WebauthnCredential struct {

@@ -1,8 +1,19 @@
 CREATE TABLE users
 (
     id            UUID PRIMARY KEY,
-    webauthn_name TEXT -- unique name used for webauthn reasons
+    project_id    UUID,       -- FK added later via ALTER TABLE
+    name          TEXT,
+    display_name  TEXT
 );
+
+CREATE TABLE projects
+(
+    id         UUID PRIMARY KEY,
+    owner_id   UUID NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    name       TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX idx_projects_owner_id ON projects (owner_id);
 
 CREATE TABLE webauthn_credentials
 (
@@ -22,5 +33,7 @@ CREATE TABLE webauthn_credentials
     created_at           TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     last_used_at         TIMESTAMPTZ
 );
-
 CREATE INDEX idx_webauthn_credentials_user_id ON webauthn_credentials (user_id);
+
+ALTER TABLE users ADD CONSTRAINT fk_users_project_id FOREIGN KEY (project_id) REFERENCES projects (id) ON DELETE CASCADE;
+CREATE UNIQUE INDEX idx_users_project_name ON users (project_id, name); -- do not allow duplicate users.name in the same project
