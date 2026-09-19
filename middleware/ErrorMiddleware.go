@@ -1,12 +1,13 @@
 package middleware
 
 import (
-	"fmt"
+	"errors"
 	"net/http"
 	"passkey-server/utils/apierror"
 	"passkey-server/utils/logger"
 	"runtime/debug"
-	"strings"
+
+	"github.com/jackc/pgx/v5/pgconn"
 )
 
 func ErrorHandler(h func(w http.ResponseWriter, r *http.Request) error) http.HandlerFunc {
@@ -18,7 +19,11 @@ func ErrorHandler(h func(w http.ResponseWriter, r *http.Request) error) http.Han
 				err.Send(w)
 				logger.Errorf("[ErrorMiddleware] ApiError thrown: %v", *err)
 			default:
-				logger.Errorf("Unexpected exception caught: %s\n%v", formatGoValue(err), r)
+				logger.Errorf("Unexpected exception caught: %v (%s %s)", err, r.Method, r.URL.Path)
+				var pgErr *pgconn.PgError
+				if errors.As(err, &pgErr) {
+					logger.Errorf("Postgres error: code=%s message=%s detail=%s hint=%s where=%s", pgErr.Code, pgErr.Message, pgErr.Detail, pgErr.Hint, pgErr.Where)
+				}
 				logger.Errorf("Stack Trace:\n%s\n", debug.Stack())
 				apierror.NewApiError(
 					http.StatusInternalServerError,
@@ -28,17 +33,4 @@ func ErrorHandler(h func(w http.ResponseWriter, r *http.Request) error) http.Han
 			}
 		}
 	}
-}
-
-func formatGoValue(v interface{}) string {
-	requestStr := fmt.Sprintf("%#v", v)
-	requestStr = strings.ReplaceAll(requestStr, ", ", ",\n  ")
-	requestStr = strings.ReplaceAll(requestStr, "{", "{\n  ")
-	requestStr = strings.ReplaceAll(requestStr, "}", "\n}")
-	requestStr = strings.ReplaceAll(requestStr, " map[", "\n  map[")
-	requestStr = strings.ReplaceAll(requestStr, "] map[", "]\n  map[")
-	requestStr = strings.ReplaceAll(requestStr, " 0x", "\n  0x")
-	requestStr = strings.ReplaceAll(requestStr, " <nil>", "\n  <nil>")
-
-	return requestStr
 }
